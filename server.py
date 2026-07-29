@@ -153,4 +153,9 @@ def file(filename: str):
     return FileResponse(path, filename=path.name)
 
 
+@app.get("/")
+def home():
+    return FileResponse(ROOT / "FetchV.html")
+
+
 app.mount("/", StaticFiles(directory=ROOT, html=True), name="site")
