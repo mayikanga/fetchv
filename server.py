@@ -97,9 +97,10 @@ def enforce_rate_limit(request: Request, action: str, limit: int) -> None:
     with RATE_LIMIT_LOCK:
         recent = [stamp for stamp in REQUEST_TIMESTAMPS.get(key, []) if now - stamp < RATE_WINDOW_SECONDS]
         if len(recent) >= limit:
+            action_name = "解析" if action == "parse" else "下载"
             raise HTTPException(
                 status_code=429,
-                detail=f"Too many {action} requests. Please wait an hour and try again.",
+                detail=f"{action_name}次数已达每小时上限，请一小时后再试。",
             )
         recent.append(now)
         REQUEST_TIMESTAMPS[key] = recent
