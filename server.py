@@ -29,7 +29,7 @@ COOKIE_FILE = os.environ.get("FETCHV_COOKIE_FILE")
 COOKIE_B64 = os.environ.get("FETCHV_COOKIES_B64")
 TEMP_COOKIE_FILE = Path(tempfile.gettempdir()) / "fetchv-cookies.txt"
 DOWNLOAD_TTL_SECONDS = int(os.environ.get("FETCHV_DOWNLOAD_TTL_SECONDS", "1800"))
-RATE_WINDOW_SECONDS = 60
+RATE_WINDOW_SECONDS = 60 * 60
 PARSE_LIMIT_PER_WINDOW = 5
 DOWNLOAD_LIMIT_PER_WINDOW = 2
 MAX_VIDEO_DURATION_SECONDS = 15 * 60
@@ -99,7 +99,7 @@ def enforce_rate_limit(request: Request, action: str, limit: int) -> None:
         if len(recent) >= limit:
             raise HTTPException(
                 status_code=429,
-                detail=f"Too many {action} requests. Please wait a minute and try again.",
+                detail=f"Too many {action} requests. Please wait an hour and try again.",
             )
         recent.append(now)
         REQUEST_TIMESTAMPS[key] = recent
