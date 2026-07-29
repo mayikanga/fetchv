@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: fetchv
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: FETCHV_COOKIES_B64
+        sync: false
+      - key: FETCHV_DOWNLOAD_TTL_SECONDS
+        value: "1800"

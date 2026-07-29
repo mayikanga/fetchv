@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import base64
 import json
 import os
 import re
 import shutil
 import subprocess
+import tempfile
+import time
 import uuid
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -15,10 +18,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, HttpUrl
 
 ROOT = Path(__file__).resolve().parent
-DOWNLOADS = ROOT / "downloads"
+DOWNLOADS = Path(
+    os.environ.get("FETCHV_DOWNLOAD_DIR")
+    or ("/tmp/fetchv-downloads" if os.environ.get("RENDER") else ROOT / "downloads")
+)
 DOWNLOADS.mkdir(exist_ok=True)
 YTDLP = shutil.which("yt-dlp")
 COOKIE_FILE = os.environ.get("FETCHV_COOKIE_FILE")
+COOKIE_B64 = os.environ.get("FETCHV_COOKIES_B64")
+TEMP_COOKIE_FILE = Path(tempfile.gettempdir()) / "fetchv-cookies.txt"
+DOWNLOAD_TTL_SECONDS = int(os.environ.get("FETCHV_DOWNLOAD_TTL_SECONDS", "1800"))
 
 app = FastAPI()
 
@@ -36,18 +45,48 @@ def canonical_url(url: str) -> str:
     return url
 
 
+def active_cookie_file() -> str | None:
+    """Return the local cookie file without exposing its contents or path to clients."""
+    if COOKIE_FILE and Path(COOKIE_FILE).is_file():
+        return COOKIE_FILE
+    if not COOKIE_B64:
+        return None
+    try:
+        content = base64.b64decode(COOKIE_B64, validate=True)
+    except ValueError as exc:
+        raise HTTPException(status_code=500, detail="Cookie secret is invalid") from exc
+    TEMP_COOKIE_FILE.write_bytes(content)
+    try:
+        TEMP_COOKIE_FILE.chmod(0o600)
+    except OSError:
+        pass
+    return str(TEMP_COOKIE_FILE)
+
+
+def clean_old_downloads() -> None:
+    cutoff = time.time() - DOWNLOAD_TTL_SECONDS
+    for item in DOWNLOADS.iterdir():
+        try:
+            if item.is_file() and item.stat().st_mtime < cutoff:
+                item.unlink()
+        except OSError:
+            continue
+
+
 def ytdlp_command(url: str) -> list[str]:
     if not YTDLP:
         raise HTTPException(status_code=500, detail="未找到 yt-dlp")
     command = [YTDLP, "--no-playlist"]
-    if COOKIE_FILE:
-        command.extend(["--cookies", COOKIE_FILE])
+    cookie_file = active_cookie_file()
+    if cookie_file:
+        command.extend(["--cookies", cookie_file])
     command.append(canonical_url(url))
     return command
 
 
 @app.post("/api/parse")
 def parse(payload: MediaRequest):
+    clean_old_downloads()
     command = ytdlp_command(str(payload.url))
     command[1:1] = ["--dump-single-json", "--skip-download"]
     result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=90)
@@ -92,6 +131,7 @@ def parse(payload: MediaRequest):
 
 @app.post("/api/download")
 def download(payload: MediaRequest):
+    clean_old_downloads()
     job_id = uuid.uuid4().hex
     template = str(DOWNLOADS / f"{job_id}.%(ext)s")
     command = ytdlp_command(str(payload.url))

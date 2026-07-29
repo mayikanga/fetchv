@@ -1,0 +1,14 @@
+.git/
+.file-versions/
+.od-skills/
+RECON/
+mirror/
+node_modules/
+downloads/
+__pycache__/
+*.cookies.txt
+cookies.txt
+*.env
+.env
+.env.*
+secrets/
