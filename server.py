@@ -7,12 +7,13 @@ import re
 import shutil
 import subprocess
 import tempfile
+import threading
 import time
 import uuid
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, HttpUrl
@@ -28,6 +29,13 @@ COOKIE_FILE = os.environ.get("FETCHV_COOKIE_FILE")
 COOKIE_B64 = os.environ.get("FETCHV_COOKIES_B64")
 TEMP_COOKIE_FILE = Path(tempfile.gettempdir()) / "fetchv-cookies.txt"
 DOWNLOAD_TTL_SECONDS = int(os.environ.get("FETCHV_DOWNLOAD_TTL_SECONDS", "1800"))
+RATE_WINDOW_SECONDS = 60
+PARSE_LIMIT_PER_WINDOW = 5
+DOWNLOAD_LIMIT_PER_WINDOW = 2
+MAX_VIDEO_DURATION_SECONDS = 15 * 60
+MAX_VIDEO_SIZE_BYTES = 300 * 1024 * 1024
+REQUEST_TIMESTAMPS: dict[tuple[str, str], list[float]] = {}
+RATE_LIMIT_LOCK = threading.Lock()
 
 app = FastAPI()
 
@@ -73,6 +81,54 @@ def clean_old_downloads() -> None:
             continue
 
 
+def client_ip(request: Request) -> str:
+    """Use the client address forwarded by Render/Cloudflare when available."""
+    return (
+        request.headers.get("cf-connecting-ip")
+        or request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+        or (request.client.host if request.client else "unknown")
+    )
+
+
+def enforce_rate_limit(request: Request, action: str, limit: int) -> None:
+    """Apply a small in-memory per-IP limit to protect the free service."""
+    now = time.monotonic()
+    key = (client_ip(request), action)
+    with RATE_LIMIT_LOCK:
+        recent = [stamp for stamp in REQUEST_TIMESTAMPS.get(key, []) if now - stamp < RATE_WINDOW_SECONDS]
+        if len(recent) >= limit:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Too many {action} requests. Please wait a minute and try again.",
+            )
+        recent.append(now)
+        REQUEST_TIMESTAMPS[key] = recent
+
+
+def enforce_media_limits(info: dict, format_id: str | None = None) -> None:
+    duration = info.get("duration")
+    if isinstance(duration, (int, float)) and duration > MAX_VIDEO_DURATION_SECONDS:
+        raise HTTPException(status_code=422, detail="Videos longer than 15 minutes are not available for download.")
+
+    if not format_id:
+        return
+    selected = next((item for item in info.get("formats", []) if item.get("format_id") == format_id), None)
+    if not selected:
+        return
+    size = selected.get("filesize") or selected.get("filesize_approx") or 0
+    if isinstance(size, (int, float)) and size > MAX_VIDEO_SIZE_BYTES:
+        raise HTTPException(status_code=422, detail="Videos larger than 300 MB are not available for download.")
+
+
+def inspect_media(url: str) -> dict:
+    command = ytdlp_command(url)
+    command[1:1] = ["--dump-single-json", "--skip-download"]
+    result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=90)
+    if result.returncode:
+        raise HTTPException(status_code=422, detail=(result.stderr.strip() or result.stdout.strip() or "Parse failed")[-800:])
+    return json.loads(result.stdout)
+
+
 def ytdlp_command(url: str) -> list[str]:
     if not YTDLP:
         raise HTTPException(status_code=500, detail="未找到 yt-dlp")
@@ -85,7 +141,8 @@ def ytdlp_command(url: str) -> list[str]:
 
 
 @app.post("/api/parse")
-def parse(payload: MediaRequest):
+def parse(payload: MediaRequest, request: Request):
+    enforce_rate_limit(request, "parse", PARSE_LIMIT_PER_WINDOW)
     clean_old_downloads()
     command = ytdlp_command(str(payload.url))
     command[1:1] = ["--dump-single-json", "--skip-download"]
@@ -93,6 +150,7 @@ def parse(payload: MediaRequest):
     if result.returncode:
         raise HTTPException(status_code=422, detail=(result.stderr.strip() or result.stdout.strip() or "解析失败")[-800:])
     info = json.loads(result.stdout)
+    enforce_media_limits(info)
     formats = []
     for item in info.get("formats", []):
         if item.get("vcodec") == "none":
@@ -130,12 +188,15 @@ def parse(payload: MediaRequest):
 
 
 @app.post("/api/download")
-def download(payload: MediaRequest):
+def download(payload: MediaRequest, request: Request):
+    enforce_rate_limit(request, "download", DOWNLOAD_LIMIT_PER_WINDOW)
     clean_old_downloads()
+    info = inspect_media(str(payload.url))
+    enforce_media_limits(info, payload.format_id)
     job_id = uuid.uuid4().hex
     template = str(DOWNLOADS / f"{job_id}.%(ext)s")
     command = ytdlp_command(str(payload.url))
-    command[1:1] = ["-f", payload.format_id or "bv*+ba/b", "--merge-output-format", "mp4", "-o", template]
+    command[1:1] = ["--max-filesize", "300M", "-f", payload.format_id or "bv*+ba/b", "--merge-output-format", "mp4", "-o", template]
     result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
     if result.returncode:
         raise HTTPException(status_code=422, detail=(result.stderr.strip() or result.stdout.strip() or "下载失败")[-800:])
