@@ -1,0 +1,17 @@
+node_modules/
+.DS_Store
+
+# Runtime files and downloaded media
+downloads/
+__pycache__/
+
+# Credentials and local deployment settings
+*.cookies.txt
+cookies.txt
+*.env
+.env
+.env.*
+secrets/
+
+# Local revision cache
+.file-versions/
