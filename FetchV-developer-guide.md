@@ -6,6 +6,8 @@
 
 FetchV 是一个前后端分离的视频解析下载工具：前端提供链接粘贴、视频信息展示、清晰度选择和下载交互，后端使用 FastAPI 调用 yt-dlp 解析媒体信息并下载视频，支持通过 Docker 部署到 Render。
 
+源码仓库：[mayikanga/fetchv](https://github.com/mayikanga/fetchv)
+
 ## 项目边界
 
 项目由两部分组成：
