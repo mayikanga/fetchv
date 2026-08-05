@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>视频解析下载 - FetchV 免费解析去水印工具</title>
+  <meta name="description" content="免费视频解析工具，支持解析下载无水印视频，在线解析链接，快速提取高清视频。">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+</head>
+<body class="font-sans antialiased">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- ===== NAV ===== -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center space-x-8">
+            <a class="flex items-center" href="#">
+              <h1 class="text-xl font-bold flex items-center" data-od-id="nav-logo">
+                <span class="text-black">Fetch</span><span class="text-blue-600">V</span>
+              </h1>
+            </a>
+            <div class="hidden md:flex space-x-4 text-base">
+              <a class="inline-flex items-center px-1 pt-1 text-base font-medium text-gray-500 hover:text-blue-600 hover:border-blue-500" href="#">首页</a>
+              <a class="inline-flex items-center px-1 pt-1 text-base font-medium text-gray-500 hover:text-blue-600 hover:border-blue-500" href="#">小红书</a>
+              <a class="inline-flex items-center px-1 pt-1 text-base font-medium text-gray-500 hover:text-blue-600 hover:border-blue-500" href="#">快手</a>
+            </div>
+          </div>
+          <div class="flex items-center space-x-0">
+            <div class="hidden md:block">
+              <a target="_blank" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600" href="#"></a>
+            </div>
+            <a class="inline-flex items-center px-4 py-2 mx-2 text-sm font-bold rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg border border-white/10 bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30" href="#" data-od-id="nav-feedback">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 md:block hidden" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
+              </svg>
+              <span>问题反馈</span>
+            </a>
+
+            <!-- Language selector -->
+            <div class="relative inline-block text-left" data-od-id="lang-selector">
+              <button id="lang-menu-button" class="inline-flex items-center p-2 rounded-md text-gray-500 hover:text-blue-600" type="button" aria-haspopup="menu" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="h-6 w-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"></path>
+                </svg>
+                <span class="ml-2">ZH</span>
+              </button>
+              <div id="lang-menu-dropdown" class="hidden origin-top-right absolute right-0 mt-2 w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                <div class="py-1" role="menu">
+                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">ZH</a>
+                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">EN</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+              <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-inset" type="button" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="block h-6 w-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu panel -->
+      <div id="mobile-menu-panel" class="hidden md:hidden border-t border-gray-200">
+        <div class="space-y-1 px-4 pb-3 pt-2">
+          <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50" href="#">首页</a>
+          <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50" href="#">Rednote/小红书</a>
+          <a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50" href="#">快手</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="flex-grow">
+      <div class="min-h-screen bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+          <!-- Hero -->
+          <div class="text-center" data-od-id="hero">
+            <h1 class="text-3xl font-bold sm:text-5xl md:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 pb-2 px-1" data-od-id="hero-title">视频解析下载 - 免费解析去水印工具</h1>
+            <p class="mt-3 max-w-md mx-auto text-base text-gray-600 sm:text-lg md:mt-5 md:text-xl md:max-w-4xl">免费视频解析工具，支持解析下载无水印视频，在线解析链接，快速提取高清视频。</p>
+          </div>
+
+          <!-- Input Form -->
+          <div class="mt-4" data-od-id="download-form">
+            <form class="max-w-xl mx-auto" id="video-form">
+              <div class="flex flex-col space-y-0">
+                <div class="mb-0 min-h-11"></div>
+                <div class="flex shadow-lg rounded-xl overflow-hidden bg-white border border-gray-100 mb-6">
+                  <div class="relative flex-1">
+                    <input id="video-url-input" type="text" placeholder="请粘贴视频链接进行解析" class="w-full min-w-0 px-6 py-4 pr-14 text-base border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset focus:border-transparent rounded-l-xl bg-white" value="">
+                  </div>
+                  <div class="flex">
+                    <button id="paste-btn" type="button" class="px-6 py-4 bg-white text-gray-700 font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-all duration-200 border-l border-gray-200">粘贴</button>
+                    <button data-od-id="path-0-1-0-0-1-0-0-1-1-1" type="submit" class="px-3 md:px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 disabled:opacity-50 transition-all duration-200 rounded-r-xl shadow-lg">解析视频</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div id="parse-result" class="hidden max-w-xl mx-auto mt-2"></div>
+          </div>
+
+          <!-- Features -->
+          <div class="mt-24" data-od-id="features">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              <div class="group relative" data-od-id="feature-free">
+                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-100 via-gray-100 to-indigo-100 opacity-50 group-hover:opacity-100 transition-opacity duration-200"></div>
+                <div class="relative p-6 text-center">
+                  <span class="text-3xl mb-4 block">🎁</span>
+                  <h3 class="text-lg font-medium text-gray-900 group-hover:text-gray-800">完全免费不限次数</h3>
+                </div>
+              </div>
+              <div class="group relative" data-od-id="feature-nologin">
+                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-100 via-gray-100 to-indigo-100 opacity-50 group-hover:opacity-100 transition-opacity duration-200"></div>
+                <div class="relative p-6 text-center">
+                  <span class="text-3xl mb-4 block">⚡</span>
+                  <h3 class="text-lg font-medium text-gray-900 group-hover:text-gray-800">无需注册/登录</h3>
+                </div>
+              </div>
+              <div class="group relative" data-od-id="feature-nowatermark">
+                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-100 via-gray-100 to-indigo-100 opacity-50 group-hover:opacity-100 transition-opacity duration-200"></div>
+                <div class="relative p-6 text-center">
+                  <span class="text-3xl mb-4 block">✨</span>
+                  <h3 class="text-lg font-medium text-gray-900 group-hover:text-gray-800">无水印下载视频</h3>
+                </div>
+              </div>
+              <div class="group relative" data-od-id="feature-speed">
+                <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-100 via-gray-100 to-indigo-100 opacity-50 group-hover:opacity-100 transition-opacity duration-200"></div>
+                <div class="relative p-6 text-center">
+                  <span class="text-3xl mb-4 block">🎯</span>
+                  <h3 class="text-lg font-medium text-gray-900 group-hover:text-gray-800">极速处理</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- How-to / FAQ sections -->
+          <div class="mt-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="space-y-16">
+
+              <!-- How to use -->
+              <section data-od-id="how-to">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">如何使用</h2>
+                <div class="grid gap-6 sm:grid-cols-2">
+                  <div class="bg-white rounded-lg p-5 border border-gray-100">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="text-base font-medium text-gray-900 mb-1">复制链接</h3>
+                        <p class="text-sm text-gray-600">打开 App，找到想要解析下载的视频，点击分享按钮，复制视频链接。</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg p-5 border border-gray-100">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="text-base font-medium text-gray-900 mb-1">粘贴链接解析</h3>
+                        <p class="text-sm text-gray-600">将复制的链接粘贴到上方的输入框中，准备进行视频解析。</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg p-5 border border-gray-100">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="text-base font-medium text-gray-900 mb-1">解析下载无水印视频</h3>
+                        <p class="text-sm text-gray-600">点击解析按钮，等待视频解析完成后即可下载去水印高清视频。</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Supported content -->
+              <section data-od-id="supported-content">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">支持的内容</h2>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div class="bg-white rounded-lg p-5 border border-gray-100 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-base font-medium text-gray-900 mb-2">抖音 / TikTok</h3>
+                    <p class="text-sm text-gray-600">解析下载抖音和 TikTok 视频，无水印高清保存</p>
+                  </div>
+                  <div class="bg-white rounded-lg p-5 border border-gray-100 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-base font-medium text-gray-900 mb-2">小红书</h3>
+                    <p class="text-sm text-gray-600">支持小红书笔记图片和视频批量解析下载</p>
+                  </div>
+                  <div class="bg-white rounded-lg p-5 border border-gray-100 hover:shadow-md transition-shadow duration-200">
+                    <h3 class="text-base font-medium text-gray-900 mb-2">快手</h3>
+                    <p class="text-sm text-gray-600">快手短视频去水印解析下载，高清原画质</p>
+                  </div>
+                </div>
+              </section>
+
+              <!-- FAQ -->
+              <section data-od-id="faq">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8">常见问题</h2>
+                <div class="space-y-4">
+                  <div class="bg-white rounded-lg shadow-sm" data-od-id="faq-q1">
+                    <button class="faq-toggle flex w-full justify-between rounded-lg px-6 py-4 text-left text-gray-900 hover:bg-blue-50 focus:outline-none focus-visible:ring focus-visible:ring-black" aria-expanded="false">
+                      <span class="font-medium">为什么无法解析视频？</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="faq-chevron h-5 w-5 text-black transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+                      </svg>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-4 text-sm text-gray-600">
+                      请检查您是否已正确复制视频链接。支持抖音、TikTok、小红书、快手等平台的视频链接。如果问题仍然存在，请尝试重新获取视频链接后再试。
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg shadow-sm" data-od-id="faq-q2">
+                    <button data-od-id="path-0-1-0-0-3-0-2-1-1-0" class="faq-toggle flex w-full justify-between rounded-lg px-6 py-4 text-left text-gray-900 hover:bg-blue-50 focus:outline-none focus-visible:ring focus-visible:ring-black" aria-expanded="false">
+                      <span class="font-medium">解析下载的视频有声音吗？</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="faq-chevron h-5 w-5 text-black transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+                      </svg>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-4 text-sm text-gray-600">
+                      是的，解析下载的视频保留了原始视频的声音，无需担心音频丢失问题。
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg shadow-sm" data-od-id="faq-q3">
+                    <button data-od-id="path-0-1-0-0-3-0-2-1-2-0" class="faq-toggle flex w-full justify-between rounded-lg px-6 py-4 text-left text-gray-900 hover:bg-blue-50 focus:outline-none focus-visible:ring focus-visible:ring-black" aria-expanded="false">
+                      <span class="font-medium">支持批量解析视频吗？</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="faq-chevron h-5 w-5 text-black transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+                      </svg>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-4 text-sm text-gray-600">
+                      目前支持逐个视频解析下载。如需批量解析，您可以重复使用解析功能处理多个视频链接。
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg shadow-sm">
+                    <button class="faq-toggle flex w-full justify-between rounded-lg px-6 py-4 text-left text-gray-900 hover:bg-blue-50 focus:outline-none focus-visible:ring focus-visible:ring-black" aria-expanded="false">
+                      <span class="font-medium">解析后的视频画质会降低吗？</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="faq-chevron h-5 w-5 text-black transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+                      </svg>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-4 text-sm text-gray-600">
+                      不会，我们提供的解析下载服务保留原始视频的高清画质。您下载的视频与原平台发布的画质一致。
+                    </div>
+                  </div>
+                  <div class="bg-white rounded-lg shadow-sm">
+                    <button class="faq-toggle flex w-full justify-between rounded-lg px-6 py-4 text-left text-gray-900 hover:bg-blue-50 focus:outline-none focus-visible:ring focus-visible:ring-black" aria-expanded="false">
+                      <span class="font-medium">下载的视频是什么格式？</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="faq-chevron h-5 w-5 text-black transition-transform duration-200">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
+                      </svg>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-4 text-sm text-gray-600">
+                      下载的视频通常为 MP4 格式，兼容所有主流设备和播放器。部分平台的原生视频格式也会被转换为通用 MP4。
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-gray-50" data-od-id="footer">
+      <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <nav class="flex flex-wrap justify-center space-x-6">
+          <a class="text-gray-500 hover:text-gray-900" href="terms.html" data-od-id="path-0-2-0-0-0">服务条款</a>
+          <a class="text-gray-500 hover:text-gray-900" href="privacy.html" data-od-id="path-0-2-0-0-1">隐私政策</a>
+          <a class="text-gray-500 hover:text-gray-900" href="#">联系我们</a>
+          <a class="text-gray-500 hover:text-gray-900" href="#">问题反馈</a>
+        </nav>
+        <p class="mt-8 text-center text-gray-400">© 2026 FetchV</p>
+        <p class="mt-2 text-center text-xs text-gray-400">视频版权归相关网站及作者所有，本站不提供和存储任何视频及图片</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // ===== Interactive JS =====
+    (function() {
+      // 1. FAQ Accordion
+      document.querySelectorAll('.faq-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var answer = this.nextElementSibling;
+          var chevron = this.querySelector('.faq-chevron');
+          var parent = this.parentNode;
+          var expanded = this.getAttribute('aria-expanded') === 'true';
+
+          // Toggle this FAQ
+          this.setAttribute('aria-expanded', !expanded);
+          answer.classList.toggle('hidden');
+          if (chevron) chevron.classList.toggle('rotate-180');
+          if (parent) parent.classList.toggle('shadow-md');
+        });
+      });
+
+      // 2. Mobile Menu Toggle
+      var menuBtn = document.getElementById('mobile-menu-button');
+      var menuPanel = document.getElementById('mobile-menu-panel');
+      if (menuBtn && menuPanel) {
+        menuBtn.addEventListener('click', function() {
+          var expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !expanded);
+          menuPanel.classList.toggle('hidden');
+        });
+      }
+
+      // 3. Language Menu
+      var langBtn = document.getElementById('lang-menu-button');
+      var langDropdown = document.getElementById('lang-menu-dropdown');
+      if (langBtn && langDropdown) {
+        langBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', !expanded);
+          langDropdown.classList.toggle('hidden');
+        });
+        document.addEventListener('click', function() {
+          langDropdown.classList.add('hidden');
+          langBtn.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      // 4. Paste Button
+      var pasteBtn = document.getElementById('paste-btn');
+      var urlInput = document.getElementById('video-url-input');
+      function syncPasteButton() {
+        if (pasteBtn && urlInput) pasteBtn.textContent = urlInput.value.trim() ? '清空' : '粘贴';
+      }
+      if (pasteBtn && urlInput) {
+        pasteBtn.addEventListener('click', function() {
+          if (urlInput.value.trim()) {
+            urlInput.value = '';
+            syncPasteButton();
+            urlInput.focus();
+            return;
+          }
+          navigator.clipboard.readText().then(function(text) {
+            urlInput.value = text;
+            syncPasteButton();
+          }).catch(function() {
+            // Fallback: focus the input
+            urlInput.focus();
+            urlInput.select();
+          });
+        });
+        urlInput.addEventListener('input', syncPasteButton);
+      }
+
+      // 5. Parse and download
+      var videoForm = document.getElementById('video-form');
+      var clearBtn = document.getElementById('clear-btn');
+      var resultBox = document.getElementById('parse-result');
+      var activeUrl = '';
+      function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, function(char) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+        });
+      }
+      function formatSize(bytes) {
+        if (!bytes) return '大小未知';
+        if (bytes >= 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+        return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+      }
+      function renderError(message) {
+        if (!resultBox) return;
+        resultBox.innerHTML = '<div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">' + escapeHtml(message) + '</div>';
+        resultBox.classList.remove('hidden');
+      }
+      function clearResult() {
+        if (resultBox) {
+          resultBox.classList.add('hidden');
+          resultBox.innerHTML = '';
+        }
+      }
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          if (urlInput) urlInput.value = '';
+          activeUrl = '';
+          clearResult();
+          if (urlInput) urlInput.focus();
+        });
+      }
+      if (videoForm) {
+        videoForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          activeUrl = urlInput ? urlInput.value.trim() : '';
+          if (!activeUrl) {
+            if (urlInput) urlInput.focus();
+            return;
+          }
+          var submitBtn = videoForm.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.textContent = '解析中...';
+            submitBtn.disabled = true;
+          }
+          clearResult();
+          fetch('/api/parse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: activeUrl })
+          }).then(function(response) {
+            return response.json().then(function(data) {
+              if (!response.ok) throw new Error(data.detail || '解析失败');
+              return data;
+            });
+          }).then(function(data) {
+            var seconds = Number(data.duration || 0);
+            var duration = seconds ? new Date(seconds * 1000).toISOString().slice(11, 19) : '时长未知';
+            var image = data.thumbnail ? '<img style="width:160px;height:112px;flex:0 0 160px;object-fit:cover" class="rounded-md bg-gray-100" src="' + escapeHtml(data.thumbnail) + '" alt="视频封面">' : '<div style="width:160px;height:112px;flex:0 0 160px;display:flex;align-items:center;justify-content:center" class="rounded-md bg-gray-100 text-sm text-gray-400">无封面</div>';
+            var formatRows = (data.formats || []).map(function(format) {
+              var label = format.quality + ' · ' + formatSize(format.filesize) + (format.watermarked ? ' · 带水印' : '');
+              return '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px" class="rounded-md border border-gray-200 px-3 py-2 text-sm">' +
+                '<span class="text-gray-700">' + escapeHtml(label) + '</span><button type="button" class="download-format-btn rounded-md bg-blue-600 px-3 py-1.5 font-semibold text-white hover:bg-blue-700" data-format-id="' + escapeHtml(format.id) + '">下载</button></div>';
+            }).join('');
+            resultBox.innerHTML = '<div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">' +
+              '<div style="display:flex;gap:16px;align-items:flex-start">' + image + '<div style="min-width:0;flex:1"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><p class="text-xs font-medium text-blue-600">解析完成</p><button id="clear-result-btn" type="button" class="text-xs text-gray-500 hover:text-blue-600">清空</button></div><h2 class="mt-1 text-base font-semibold text-gray-900 break-words">' + escapeHtml(data.title) + '</h2><p class="mt-1 text-sm text-gray-500">' + escapeHtml(data.uploader || '未知作者') + ' · ' + duration + '</p>' +
+              '<div style="display:grid;gap:8px;margin-top:12px">' + formatRows + '</div></div></div></div>';
+            resultBox.classList.remove('hidden');
+            resultBox.querySelector('#clear-result-btn').addEventListener('click', function() {
+              if (urlInput) urlInput.value = '';
+              syncPasteButton();
+              activeUrl = '';
+              clearResult();
+              if (urlInput) urlInput.focus();
+            });
+            resultBox.querySelectorAll('.download-format-btn').forEach(function(button) {
+              button.addEventListener('click', function() {
+              var selectedButton = this;
+              var formatId = selectedButton.getAttribute('data-format-id');
+              selectedButton.disabled = true;
+              selectedButton.textContent = '下载中...';
+              fetch('/api/download', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: activeUrl, format_id: formatId }) })
+                .then(function(response) { return response.json().then(function(data) { if (!response.ok) throw new Error(data.detail || '下载失败'); return data; }); })
+                .then(function(data) { window.location.href = data.url; selectedButton.textContent = '已开始下载'; })
+                .catch(function(error) { selectedButton.disabled = false; selectedButton.textContent = '下载'; renderError(error.message || '下载失败，请重试。'); });
+              });
+            });
+          }).catch(function(error) {
+            renderError(error.message || '解析失败，请检查链接后重试。');
+          }).finally(function() {
+            if (submitBtn) {
+              submitBtn.textContent = '解析视频';
+              submitBtn.disabled = false;
+            }
+          });
+        });
+      }
+    })();
+  </script>
+
+
+</body></html>
