@@ -22,43 +22,18 @@
 ## 架构
 
 ```mermaid
-flowchart TB
-    subgraph Browser["浏览器端 · FetchV.html"]
-        Input["输入视频链接"]
-        Result["展示标题、封面、时长和格式"]
-        Select["选择清晰度和下载格式"]
-        Save["下载临时文件"]
-    end
-
-    subgraph API["后端 API · FastAPI / server.py"]
-        Parse["POST /api/parse"]
-        Download["POST /api/download"]
-        File["GET /api/file/{filename}"]
-        Guard["URL 校验 · 限流 · 大小/时长校验"]
-    end
-
-    subgraph Media["媒体处理层"]
-        YTDLP["yt-dlp<br/>解析媒体信息 / 下载媒体"]
-        FFmpeg["ffmpeg<br/>合并音视频"]
-    end
-
-    Temp["临时下载目录<br/>TTL 到期后自动清理"]
-    Platform["Docker / Render<br/>运行 FastAPI 服务"]
-
-    Input --> Parse
-    Parse --> Guard
-    Guard --> YTDLP
-    YTDLP --> Result
-    Result --> Select
-    Select --> Download
-    Download --> Guard
-    Guard --> YTDLP
-    YTDLP --> FFmpeg
-    FFmpeg --> Temp
-    Temp --> File
-    File --> Save
-    Platform -.部署.-> API
-    Platform -.提供运行环境.-> Media
+flowchart TD
+  A["FetchV.html"] --> B["粘贴视频链接"]
+  B --> C["POST /api/parse"]
+  C --> D["FastAPI + yt-dlp"]
+  D --> E["标题、封面、作者、时长、格式列表"]
+  E --> A
+  A --> F["选择下载格式"]
+  F --> G["POST /api/download"]
+  G --> H["FastAPI + yt-dlp 下载"]
+  H --> I["临时文件目录"]
+  I --> J["GET /api/file/{filename}"]
+  J --> K["浏览器下载视频"]
 ```
 
 ## 本地运行
