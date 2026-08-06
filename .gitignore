@@ -15,3 +15,9 @@ secrets/
 
 # Local revision cache
 .file-versions/
+
+# Generated artifacts and local design exports
+*.artifact.json
+drawing-*.png
+.od-skills/
+assets/images/
