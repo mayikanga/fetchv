@@ -10,6 +10,8 @@
 
 ![FetchV 首页](./screenshots/fetchv-home.png)
 
+![FetchV 解析结果](./screenshots/fetchv-result.png)
+
 ## 功能
 
 - 粘贴视频链接并解析标题、封面、作者、时长和可用格式。
