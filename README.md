@@ -61,8 +61,6 @@ flowchart TB
     Platform -.提供运行环境.-> Media
 ```
 
-核心链路：浏览器提交链接 → FastAPI 校验请求 → yt-dlp 解析或下载 → ffmpeg 合并媒体 → 临时文件返回浏览器。
-
 ## 本地运行
 
 要求：
