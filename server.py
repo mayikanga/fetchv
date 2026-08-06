@@ -172,12 +172,13 @@ def parse(payload: MediaRequest, request: Request):
     formats.sort(key=lambda item: (item["watermarked"], -item["height"], -item["direct"], -item["filesize"], -item["bitrate"]))
     unique = []
     seen = set()
+    quality_labels = {720: "高清画质", 576: "标准画质"}
     for item in formats:
         key = (item["height"], item["ext"], item["watermarked"])
         if key in seen:
             continue
         seen.add(key)
-        item["quality"] = f'{item["height"]}p' if item["height"] else "原始质量"
+        item["quality"] = quality_labels.get(item["height"], f'{item["height"]}p' if item["height"] else "原始质量")
         unique.append(item)
     return {
         "title": info.get("title") or "未命名内容",
