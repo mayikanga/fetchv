@@ -22,17 +22,46 @@
 ## 架构
 
 ```mermaid
-flowchart LR
-    A["浏览器输入视频链接"] --> B["POST /api/parse"]
-    B --> C["FastAPI + yt-dlp 获取媒体信息"]
-    C --> D["返回格式、清晰度和媒体元数据"]
-    D --> E["用户选择下载格式"]
-    E --> F["POST /api/download"]
-    F --> G["服务端复核参数并调用 yt-dlp/ffmpeg"]
-    G --> H["临时文件目录"]
-    H --> I["GET /api/file/{filename}"]
-    I --> J["浏览器下载文件"]
+flowchart TB
+    subgraph Browser["浏览器端 · FetchV.html"]
+        Input["输入视频链接"]
+        Result["展示标题、封面、时长和格式"]
+        Select["选择清晰度和下载格式"]
+        Save["下载临时文件"]
+    end
+
+    subgraph API["后端 API · FastAPI / server.py"]
+        Parse["POST /api/parse"]
+        Download["POST /api/download"]
+        File["GET /api/file/{filename}"]
+        Guard["URL 校验 · 限流 · 大小/时长校验"]
+    end
+
+    subgraph Media["媒体处理层"]
+        YTDLP["yt-dlp<br/>解析媒体信息 / 下载媒体"]
+        FFmpeg["ffmpeg<br/>合并音视频"]
+    end
+
+    Temp["临时下载目录<br/>TTL 到期后自动清理"]
+    Platform["Docker / Render<br/>运行 FastAPI 服务"]
+
+    Input --> Parse
+    Parse --> Guard
+    Guard --> YTDLP
+    YTDLP --> Result
+    Result --> Select
+    Select --> Download
+    Download --> Guard
+    Guard --> YTDLP
+    YTDLP --> FFmpeg
+    FFmpeg --> Temp
+    Temp --> File
+    File --> Save
+    Platform -.部署.-> API
+    Platform -.提供运行环境.-> Media
 ```
+
+核心链路：浏览器提交链接 → FastAPI 校验请求 → yt-dlp 解析或下载 → ffmpeg 合并媒体 → 临时文件返回浏览器。
 
 ## 本地运行
 
