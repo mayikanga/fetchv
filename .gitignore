@@ -12,6 +12,7 @@ cookies.txt
 .env
 .env.*
 secrets/
+NOTES.md
 
 # Local revision cache
 .file-versions/
