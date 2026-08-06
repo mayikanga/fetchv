@@ -6,6 +6,10 @@
 
 开发者指南：[FetchV-developer-guide.md](./FetchV-developer-guide.md)
 
+## 界面截图
+
+![FetchV 首页](./screenshots/fetchv-home.png)
+
 ## 功能
 
 - 粘贴视频链接并解析标题、封面、作者、时长和可用格式。
